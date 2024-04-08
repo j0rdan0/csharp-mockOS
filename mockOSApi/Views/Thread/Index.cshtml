@@ -1,0 +1,47 @@
+@model IEnumerable<mockOSApi.Models.Thread>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.threadCount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Handle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HashCode)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.threadCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Handle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HashCode)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Tid">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Tid">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Tid">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

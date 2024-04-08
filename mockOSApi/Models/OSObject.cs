@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace MockOS {
+namespace mockOSApi.Models {
 
     public class OSObject {
 

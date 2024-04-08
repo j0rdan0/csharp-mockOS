@@ -1,13 +1,14 @@
 using static System.Console;
+using System.ComponentModel.DataAnnotations;
 
-namespace MockOS {
+namespace mockOSApi.Models {
     interface IThread {
     int GetTid();
     int Run();
     
 };
 
-    class Thread : OSObject, IThread {
+    public class Thread : OSObject, IThread {
 
         private static int _threadcount;
 
@@ -20,7 +21,7 @@ namespace MockOS {
             set => _stack = value;
         }
 
-
+        [Key]
        public int Tid {
             get => _tid;
             set => _tid = value;
@@ -42,6 +43,11 @@ namespace MockOS {
         }
         public int Run() {
 
+            return 1;
+        }
+
+        private int TerminateThread() {
+            WriteLine("terminated thread {0}",this.Tid);
             return 1;
         }
 
