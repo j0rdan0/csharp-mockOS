@@ -8,7 +8,8 @@ public interface IProcessRepository {
     MockProcess? GetProcessByPid(int pid);
     Task CreateProcess();
     void KillProcess(MockProcess proc);
-    void UpdateProcess(int pid);
+  void ChangePriority(int prio,int pid);
+    public Task CreateProcess(MockProcess proc);
      public Task Save();
 };
 
@@ -25,12 +26,20 @@ public class ProcessRepositoryDb: IProcessRepository {
          await _dbContext.AddAsync<MockProcess>(new MockProcess("/bin/bash",null));
 
     }
+    public  async Task CreateProcess(MockProcess proc) {
+         await _dbContext.AddAsync<MockProcess>(proc);
+
+    }
+
     public void KillProcess(MockProcess proc) {
         _dbContext.Remove(proc);
 
     }
 
-    public void UpdateProcess(int pid) {
+    public void ChangePriority(int prio,int pid) {
+        var proc = GetProcessByPid(pid);
+        proc.Priority = prio;
+        _dbContext.SaveChanges();
         
     }
 

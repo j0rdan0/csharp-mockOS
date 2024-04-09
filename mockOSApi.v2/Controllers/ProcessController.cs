@@ -6,6 +6,8 @@ using System.Text.Json.Serialization;
 using System.Text.Json;
 using mockOSApi.Models;
 using NuGet.Protocol.Plugins;
+using mockOSApi.DTO;
+using System.Xml;
 
 
 [ApiController]
@@ -20,7 +22,7 @@ public class ProcessController: Controller {
  
      }
 
-// GET /process
+// GET /api/process
 [HttpGet]
      public string Index() {
 
@@ -28,23 +30,43 @@ public class ProcessController: Controller {
         return "created process\n";
      }
 
-// GET /process/all
+// GET /api/process/all
 
 
 [HttpGet("all")]
      public ActionResult<List<MockProcess>> GetAll() {
         _logger.LogInformation("got processes");
    
-        return _handler.GetAllProcesses().ToList();
+        return Ok(_handler.AllProcesses.ToList());
      }
 
+// GET /process/[pid]
 [HttpGet("{pid:int}")]
      public ActionResult<MockProcess> Get(int pid) {
-        return _handler.GetProcessByPid(pid);
+        return Ok(_handler.GetProcessByPid(pid));
      }
 
+[HttpPost]
+public ActionResult CreateProcess(MockProcess process) {
+      _logger.LogInformation("created process with pid: {0}",process.Pid);
+    _handler.CreateProcess(process);
+    return Ok();
+}
 
+[HttpGet("delete/{pid:int}")]
+public ActionResult KillProcess(int pid) {
+   var p = _handler.GetProcessByPid(pid);
+   _handler.KillProcess(p);
+   return Ok(p);
+}
 
+[HttpPut("priority")] 
+public ActionResult ChangePriority([FromBody] PriorityClass prio) {
+    
+   
+   _handler.ChangePriority(prio.Prio,prio.Pid);
+   return Ok();
 
+}
 
 }
