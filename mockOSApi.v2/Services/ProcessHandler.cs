@@ -1,11 +1,13 @@
 using System.Text.Json;
 using mockOSApi.Repository;
+using mockOSApi.Models;
 
 namespace mockOSApi.Services;
 
 
 public interface IProcessHandler {
-     public string GetAllProcesses();
+     public IEnumerable<MockProcess> GetAllProcesses();
+     public MockProcess? GetProcessByPid(int pid);
 }
 
 public class ProcessHandler: IProcessHandler {
@@ -17,12 +19,13 @@ public class ProcessHandler: IProcessHandler {
 
     }
 
-    public string GetAllProcesses() {
+    public IEnumerable<MockProcess>? GetAllProcesses() {
         
         if (_repository.GetAll().ToList().Count == 0){
-            return String.Empty;
+            return null;
         }
-        return String.Join(" ",JsonSerializer.Serialize(_repository.GetAll()));
+        return _repository.GetAll().ToList();
     }
 
+    public MockProcess? GetProcessByPid(int pid) => _repository.GetProcessByPid(pid);
 }
