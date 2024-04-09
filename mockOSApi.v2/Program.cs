@@ -2,6 +2,7 @@ using mockOSApi.Data;
 using mockOSApi.Repository;
 using Microsoft.EntityFrameworkCore;
 using mockOSApi.Models;
+using mockOSApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultDatabas
         );
 
 builder.Services.AddScoped(typeof(IProcessRepository),typeof(ProcessRepositoryDb));
+builder.Services.AddScoped(typeof(IProcessHandler),typeof(ProcessHandler));
 
 var app = builder.Build();
 
