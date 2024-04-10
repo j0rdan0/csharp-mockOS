@@ -10,63 +10,70 @@ using mockOSApi.DTO;
 using System.Xml;
 
 
+
 [ApiController]
 [Route("/api/[controller]")]
-public class ProcessController: Controller {
-     private readonly ILogger<ProcessController> _logger;
-     private readonly IProcessHandler _handler;
-   
-     public ProcessController(ILogger<ProcessController> logger,IProcessHandler processHandler) {
+public class ProcessController : Controller
+{
+    private readonly ILogger<ProcessController> _logger;
+    private readonly IProcessHandler _handler;
+
+    public ProcessController(ILogger<ProcessController> logger, IProcessHandler processHandler)
+    {
         _logger = logger;
         _handler = processHandler;
- 
-     }
 
-// GET /api/process
-[HttpGet]
-     public string Index() {
+    }
 
-      _logger.LogInformation("created process");
+    // GET /api/process
+    [HttpGet]
+    public string Index()
+    {
+
+        _logger.LogInformation("created process");
         return "created process\n";
-     }
+    }
 
-// GET /api/process/all
+    // GET /api/process/all
 
 
-[HttpGet("all")]
-     public ActionResult<List<MockProcess>> GetAll() {
+    [HttpGet("all")]
+    public ActionResult<List<ProcessDto>> GetAll()
+    {
         _logger.LogInformation("got processes");
-   
+
         return Ok(_handler.AllProcesses.ToList());
-     }
+    }
 
-// GET /process/[pid]
-[HttpGet("{pid:int}")]
-     public ActionResult<MockProcess> Get(int pid) {
+    // GET /process/[pid]
+    [HttpGet("{pid:int}")]
+    public ActionResult<ProcessDto> Get(int pid)
+    {
         return Ok(_handler.GetProcessByPid(pid));
-     }
+    }
 
-[HttpPost]
-public ActionResult CreateProcess(MockProcess process) {
-      _logger.LogInformation("created process with pid: {0}",process.Pid);
-    _handler.CreateProcess(process);
-    return Ok();
-}
+    [HttpPost]
+    public ActionResult CreateProcess(ProcessCreationDto process)
+    {
+        _logger.LogInformation("created process");
+        _handler.CreateProcess(process);
+        return Ok(process);
+    }
 
-[HttpGet("delete/{pid:int}")]
-public ActionResult KillProcess(int pid) {
-   var p = _handler.GetProcessByPid(pid);
-   _handler.KillProcess(p);
-   return Ok(p);
-}
+    [HttpGet("delete/{pid:int}")]
+    public ActionResult KillProcess(int pid)
+    {
+        var p = _handler.GetProcessByPid(pid);
+        _handler.KillProcess(p);
+        return Ok(p);
+    }
 
-[HttpPut("priority")] 
-public ActionResult ChangePriority([FromBody] PriorityClass prio) {
-    
-   
-   _handler.ChangePriority(prio.Prio,prio.Pid);
-   return Ok();
+    [HttpPut("priority")]
+    public ActionResult ChangePriority([FromBody] PriorityClass prio)
+    {
+        _handler.ChangePriority(prio.Prio, prio.Pid);
+        return Ok();
 
-}
+    }
 
 }
