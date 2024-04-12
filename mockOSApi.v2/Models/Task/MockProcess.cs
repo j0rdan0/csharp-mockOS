@@ -14,17 +14,19 @@ public class MockProcess : OSObject
 
     private int _processCounter;
 
+    public const int DEFAULT_PRIORITY = 50;
+
     public static int ProcessCounter
     { // need to replace this with the number of actual rows in Process table;
         get; set;
     }
     private int _exitCode;
     private int _pid;
-    private string? _image;
+    private string? _image; // do I really need the private fields
     private int _prio;
     private int[]? _fds;
     private string[]? _arguments;
-    PROC_STATE _state;
+    public ProcState _state;
 
     [Key]
     public int Pid
@@ -39,7 +41,7 @@ public class MockProcess : OSObject
     }
 
 
-    public PROC_STATE Status
+    public ProcState Status
     {
         get => _state;
         set => _state = value;
@@ -79,41 +81,45 @@ public class MockProcess : OSObject
 
         // get PID from DB
 
-        Status = PROC_STATE.Sleeping;
+        Status = ProcState.SLEEPING;
         Args = arguments;
         Priority = 50; //default value
+        _exitCode = 0;
     }
 
     public MockProcess(string image)
     {
         Image = image;
 
-        Status = PROC_STATE.Sleeping;
+        Status = ProcState.SLEEPING;
         Priority = 50; //default value
 
     }
     public MockProcess()
     {
-        Status = PROC_STATE.Sleeping;
-        Priority = 50; //default value , use const instead 
+        Status = ProcState.SLEEPING;
+        Priority = DEFAULT_PRIORITY;
     }
 
 
 }
 
-public enum PROC_STATE
+public enum ProcState
 {
-    Running,
-    Sleeping,
-    Zombie
+    RUNNING,
+    SLEEPING,
+    ZOMBIE,
+    DEAD
 };
 
-public enum DEFAULT_FD
+public enum DefaultFd
 {
     STDIN,
     STDOUT,
     STDERR
 };
+
+
 
 
 public interface IProcess

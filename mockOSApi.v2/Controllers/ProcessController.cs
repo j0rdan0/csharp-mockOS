@@ -7,7 +7,7 @@ using System.Text.Json;
 using mockOSApi.Models;
 using NuGet.Protocol.Plugins;
 using mockOSApi.DTO;
-using System.Xml;
+
 
 
 
@@ -16,12 +16,12 @@ using System.Xml;
 public class ProcessController : Controller
 {
     private readonly ILogger<ProcessController> _logger;
-    private readonly IProcessHandler _handler;
+    private readonly IProcessService _processService;
 
-    public ProcessController(ILogger<ProcessController> logger, IProcessHandler processHandler)
+    public ProcessController(ILogger<ProcessController> logger, IProcessService processHandler)
     {
         _logger = logger;
-        _handler = processHandler;
+        _processService = processHandler;
 
     }
 
@@ -38,40 +38,39 @@ public class ProcessController : Controller
 
 
     [HttpGet("all")]
-    public ActionResult<List<ProcessDto>> GetAll()
+    public ActionResult<List<MockProcessDto>> GetAll()
     {
         _logger.LogInformation("got processes");
 
-        return Ok(_handler.AllProcesses.ToList());
+        return Ok(_processService.AllProcesses.ToList());
     }
 
     // GET /process/[pid]
     [HttpGet("{pid:int}")]
-    public ActionResult<ProcessDto> Get(int pid)
+    public ActionResult<MockProcessDto> Get(int pid)
     {
-        return Ok(_handler.GetProcessByPid(pid));
+        return Ok(_processService.GetProcessByPid(pid));
     }
 
     [HttpPost]
-    public ActionResult CreateProcess(ProcessCreationDto process)
+    public async Task<ActionResult> CreateProcess(MockProcessCreationDto process)
     {
         _logger.LogInformation("created process");
-        _handler.CreateProcess(process);
+        await _processService.CreateProcess(process);
         return Ok(process);
     }
 
     [HttpGet("delete/{pid:int}")]
     public ActionResult KillProcess(int pid)
     {
-        var p = _handler.GetProcessByPid(pid);
-        _handler.KillProcess(p);
-        return Ok(p);
+        _processService.KillProcess(pid);
+        return Ok();
     }
 
     [HttpPut("priority")]
     public ActionResult ChangePriority([FromBody] PriorityClass prio)
     {
-        _handler.ChangePriority(prio.Prio, prio.Pid);
+        _processService.ChangePriority(prio.Prio, prio.Pid);
         return Ok();
 
     }

@@ -3,6 +3,10 @@ using mockOSApi.Repository;
 using Microsoft.EntityFrameworkCore;
 using mockOSApi.Services;
 using mockOSApi.DTO;
+using AutoMapper;
+using mockOSApi.Models;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,12 +26,17 @@ builder.Services.AddDbContext<OSDbContext>(
        );
 
 builder.Services.AddScoped(typeof(IProcessRepository), typeof(ProcessRepositoryDb));
-builder.Services.AddScoped(typeof(IProcessHandler), typeof(ProcessHandler));
-builder.Services.AddScoped(typeof(IMapper), typeof(ProcessMapper));
+builder.Services.AddScoped(typeof(IProcessService), typeof(ProcessService));
 
+
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.CreateMap<MockProcess, MockProcessDto>();
+    cfg.CreateMap<MockProcessCreationDto, MockProcess>();
+    cfg.CreateMap<MockProcessDto, MockProcess>();
+
+});
 var app = builder.Build();
-
-
 
 app.UseHttpsRedirection();
 

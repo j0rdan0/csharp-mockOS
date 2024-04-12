@@ -1,5 +1,7 @@
 using mockOSApi.Models;
 using mockOSApi.Data;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+
 
 namespace mockOSApi.Repository;
 
@@ -8,7 +10,7 @@ public interface IProcessRepository
     IEnumerable<MockProcess> GetAll();
     MockProcess? GetProcessByPid(int pid);
     Task CreateProcess();
-    void KillProcess(MockProcess proc);
+    void KillProcess(int pid);
     void ChangePriority(int prio, int pid);
     public Task CreateProcess(MockProcess proc);
     public Task Save();
@@ -24,7 +26,8 @@ public class ProcessRepositoryDb : IProcessRepository
     }
     public MockProcess? GetProcessByPid(int pid)
     {
-        return _dbContext.Find<MockProcess>(pid);
+        return _dbContext.MockProcesses.Where<MockProcess>(p => p.Pid == pid).FirstOrDefault();
+
     }
     public async Task CreateProcess()
     {
@@ -37,9 +40,11 @@ public class ProcessRepositoryDb : IProcessRepository
 
     }
 
-    public void KillProcess(MockProcess proc)
+    public void KillProcess(int pid)
     {
-        _dbContext.Remove(proc);
+
+        MockProcess? proc = _dbContext.MockProcesses.Find(pid);
+        _dbContext.Remove<MockProcess>(proc);
         _dbContext.SaveChanges();
 
     }
