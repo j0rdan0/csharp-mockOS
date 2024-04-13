@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using mockOSApi.Models;
-using mockOSApi.Repository;
 
 namespace mockOSApi.DTO;
 
@@ -10,6 +9,8 @@ public class PriorityClass()
     public int Prio { get; set; }
     public int Pid { get; set; }
 }
+
+
 
 public class MockProcessDto()
 {

@@ -3,7 +3,6 @@ using mockOSApi.Repository;
 using Microsoft.EntityFrameworkCore;
 using mockOSApi.Services;
 using mockOSApi.DTO;
-using AutoMapper;
 using mockOSApi.Models;
 
 
@@ -52,3 +51,5 @@ app.MapControllerRoute(
 // app.MapControllers();
 
 app.Run();
+
+public partial class Program {}
