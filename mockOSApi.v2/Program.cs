@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using mockOSApi.Services;
 using mockOSApi.DTO;
 using mockOSApi.Models;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 
 
@@ -26,6 +28,17 @@ builder.Services.AddDbContext<OSDbContext>(
 
 builder.Services.AddScoped(typeof(IProcessRepository), typeof(ProcessRepositoryDb));
 builder.Services.AddScoped(typeof(IProcessService), typeof(ProcessService));
+builder.Services.AddSwaggerGen( options =>  {
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v2",
+        Title = "mockOS API",
+        Description = "An ASP.NET Core Web API for simulating the basic functions of an operating system",
+        
+    });
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+}); //added Swagger
 
 
 builder.Services.AddAutoMapper(cfg =>
@@ -49,6 +62,12 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.Run();
 

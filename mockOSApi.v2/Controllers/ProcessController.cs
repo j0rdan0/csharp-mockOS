@@ -7,6 +7,7 @@ using mockOSApi.DTO;
 
 [ApiController]
 [Route("/api/[controller]")]
+[Produces("application/json")]
 public class ProcessController : Controller
 {
     private readonly ILogger<ProcessController> _logger;
@@ -30,7 +31,10 @@ public class ProcessController : Controller
 
     // GET /api/process/all
 
-
+    /// <summary>
+    /// Get all processes
+    /// </summary>
+    /// <returns></returns>
     [HttpGet("all")]
     public ActionResult<List<MockProcessDto>> GetAll()
     {
@@ -40,20 +44,34 @@ public class ProcessController : Controller
     }
 
     // GET /process/[pid]
+    /// <summary>
+    /// Get process with PID
+    /// </summary>
+    /// <param name="pid">Process ID</param>
+    /// <returns></returns>
     [HttpGet("{pid:int}")]
     public ActionResult<MockProcessDto> Get(int pid)
     {
         return Ok(_processService.GetProcessDtoByPid(pid));
     }
-
+/// <summary>
+/// Create a new process
+/// </summary>
+/// <param name="process">ProcessCreation DTO object</param>
+/// <returns></returns>
     [HttpPost]
+    
     public async Task<ActionResult> CreateProcess(MockProcessCreationDto process)
     {
         _logger.LogInformation("created process");
         await _processService.CreateProcess(process);
         return Ok(process);
     }
-
+/// <summary>
+/// Delete an existing process
+/// </summary>
+/// <param name="pid">Process ID</param>
+/// <returns></returns>
     [HttpGet("delete/{pid:int}")]
     public ActionResult KillProcess(int pid)
     {
