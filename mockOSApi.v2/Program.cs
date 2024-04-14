@@ -1,41 +1,44 @@
 using mockOSApi.Data;
 using mockOSApi.Repository;
 using Microsoft.EntityFrameworkCore;
-using mockOSApi.Models;
 using mockOSApi.Services;
+using mockOSApi.DTO;
+using mockOSApi.Models;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultDatabase");
 
- builder.Services.AddDbContext<OSDbContext>(
-            dbContextOptions => dbContextOptions
-                .UseMySql(connectionString, new MySqlServerVersion(new Version(11, 0, 2))) //should handle this hardcoding for server version
-                // The following three options help with debugging, but should
-                // be changed or removed for production.
-                .LogTo(Console.WriteLine, LogLevel.Information)
-                .EnableSensitiveDataLogging()
-                .EnableDetailedErrors()
-        );
+builder.Services.AddDbContext<OSDbContext>(
+           dbContextOptions => dbContextOptions
+               .UseMySql(connectionString, new MySqlServerVersion(new Version(11, 0, 2))) //should handle this hardcoding for server version
+                                                                                          // The following three options help with debugging, but should
+                                                                                          // be changed or removed for production.
+               .LogTo(Console.WriteLine, LogLevel.Information)
+               .EnableSensitiveDataLogging()
+               .EnableDetailedErrors()
+       );
 
-builder.Services.AddScoped(typeof(IProcessRepository),typeof(ProcessRepositoryDb));
-builder.Services.AddScoped(typeof(IProcessHandler),typeof(ProcessHandler));
+builder.Services.AddScoped(typeof(IProcessRepository), typeof(ProcessRepositoryDb));
+builder.Services.AddScoped(typeof(IProcessService), typeof(ProcessService));
 
+
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.CreateMap<MockProcess, MockProcessDto>();
+    cfg.CreateMap<MockProcessCreationDto, MockProcess>();
+    cfg.CreateMap<MockProcessDto, MockProcess>();
+
+});
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+
 
 app.UseRouting();
 
@@ -45,6 +48,8 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-   // app.MapControllers();
+// app.MapControllers();
 
 app.Run();
+
+public partial class Program {}
