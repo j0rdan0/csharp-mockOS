@@ -10,7 +10,7 @@ public interface IProcessRepository
     IEnumerable<MockProcess> GetAll();
     MockProcess? GetProcessByPid(int pid);
     Task CreateProcess();
-    void KillProcess(int pid);
+    void KillProcess(MockProcess proc);
     void ChangePriority(int prio, int pid);
     public Task CreateProcess(MockProcess proc);
     public Task Save();
@@ -40,10 +40,8 @@ public class ProcessRepositoryDb : IProcessRepository
 
     }
 
-    public void KillProcess(int pid)
+    public void KillProcess(MockProcess proc)
     {
-
-        MockProcess? proc = _dbContext.MockProcesses.Find(pid);
         _dbContext.Remove<MockProcess>(proc);
         _dbContext.SaveChanges();
 
