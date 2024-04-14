@@ -9,7 +9,8 @@ public interface IProcessService
 {
     public IEnumerable<MockProcessDto> AllProcesses { get; }
 
-    public MockProcessDto GetProcessByPid(int pid);
+    public MockProcessDto GetProcessDtoByPid(int pid);
+    public MockProcess GetProcessByPid(int pid);
     public Task CreateProcess(MockProcessCreationDto proc);
     void KillProcess(int pid);
     public void ChangePriority(int prio, int pid);
@@ -49,19 +50,30 @@ public class ProcessService : IProcessService
         }
     }
 
-    public MockProcessDto GetProcessByPid(int pid) => _mapper.Map<MockProcessDto>(_repository.GetProcessByPid(pid));
-
+    public MockProcessDto GetProcessDtoByPid(int pid) => _mapper.Map<MockProcessDto>(_repository.GetProcessByPid(pid));
+    public MockProcess? GetProcessByPid(int pid) => _repository.GetProcessByPid(pid);
     public async Task CreateProcess(MockProcessCreationDto process)
     {
 
-        await _repository.CreateProcess(_mapper.Map<MockProcess>(process));
+        var proc = _mapper.Map<MockProcess>(process);
+        //here I need to handle:
+        // - setting PID automaticall, starting with 2, as PID should be reserved for init
+        // - setting priority to default, unless already set in DTO
+        // - setting Status to Sleeping
+        // - allocating memory
+        // - creating main pool, etc
+        await _repository.CreateProcess(proc);
         await _repository.Save();
     }
 
     public void KillProcess(int pid)
     {
 
-        _repository.KillProcess(pid);
+        MockProcess? proc = GetProcessByPid(pid);
+        if (proc == null) {
+            return;
+        }
+        _repository.KillProcess(proc);
 
     }
 

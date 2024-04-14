@@ -43,7 +43,7 @@ public class ProcessController : Controller
     [HttpGet("{pid:int}")]
     public ActionResult<MockProcessDto> Get(int pid)
     {
-        return Ok(_processService.GetProcessByPid(pid));
+        return Ok(_processService.GetProcessDtoByPid(pid));
     }
 
     [HttpPost]
