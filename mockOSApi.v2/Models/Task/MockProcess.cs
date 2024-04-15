@@ -1,17 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-
 namespace mockOSApi.Models;
-
 
 public class MockProcess : OSObject
 {
-
-    /*
-    Fields and properties
-    ****************************
-    */
-
     private int _processCounter;
 
     public const int DEFAULT_PRIORITY = 50;
@@ -39,7 +31,6 @@ public class MockProcess : OSObject
         get => _image;
         set => _image = value;
     }
-
 
     public ProcState Status
     {
@@ -71,17 +62,13 @@ public class MockProcess : OSObject
         set => _fds = value;
     }
 
-    /*
-    Constructor members
-    ********************************
-    */
     public MockProcess(string image, string[]? arguments)
     {
         Image = image;
 
         // get PID from DB
 
-        Status = ProcState.SLEEPING;
+        Status = ProcState.SLEEPING; // should avoid changing this here !!
         Args = arguments;
         Priority = 50; //default value
         _exitCode = 0;
@@ -120,9 +107,7 @@ public enum DefaultFd
 };
 
 
-
-
 public interface IProcess
 {
-
+    //TBD
 }

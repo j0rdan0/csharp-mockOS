@@ -11,8 +11,10 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 builder.Services.AddControllers();
+
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultDatabase");
 
@@ -28,13 +30,14 @@ builder.Services.AddDbContext<OSDbContext>(
 
 builder.Services.AddScoped(typeof(IProcessRepository), typeof(ProcessRepositoryDb));
 builder.Services.AddScoped(typeof(IProcessService), typeof(ProcessService));
-builder.Services.AddSwaggerGen( options =>  {
+builder.Services.AddSwaggerGen(options =>
+{
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v2",
         Title = "mockOS API",
         Description = "An ASP.NET Core Web API for simulating the basic functions of an operating system",
-        
+
     });
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
@@ -46,6 +49,7 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.CreateMap<MockProcess, MockProcessDto>();
     cfg.CreateMap<MockProcessCreationDto, MockProcess>();
     cfg.CreateMap<MockProcessDto, MockProcess>();
+    cfg.CreateMap<MockProcessCreationDto, MockProcessDto>();
 
 });
 var app = builder.Build();

@@ -11,14 +11,15 @@ public interface IProcessService
 
     public MockProcessDto GetProcessDtoByPid(int pid);
     public MockProcess GetProcessByPid(int pid);
-    public Task CreateProcess(MockProcessCreationDto proc);
+    public Task<MockProcessDto>? CreateProcess(MockProcessCreationDto proc);
     void KillProcess(int pid);
-    public void ChangePriority(int prio, int pid);
+    public MockProcessDto? ChangePriority(int prio, int pid);
+
+    public List<MockProcessDto>? GetProcessByName(string name);
 }
 
 public class ProcessService : IProcessService
 {
-
     public readonly IProcessRepository _repository;
     public readonly IMapper _mapper;
 
@@ -52,7 +53,23 @@ public class ProcessService : IProcessService
 
     public MockProcessDto GetProcessDtoByPid(int pid) => _mapper.Map<MockProcessDto>(_repository.GetProcessByPid(pid));
     public MockProcess? GetProcessByPid(int pid) => _repository.GetProcessByPid(pid);
-    public async Task CreateProcess(MockProcessCreationDto process)
+
+    public List<MockProcessDto>? GetProcessByName(string name)
+    {
+        List<MockProcessDto>? procs = new List<MockProcessDto>();
+        foreach (var proc in _repository.GetProcessByName(name))
+        {
+            procs.Add(_mapper.Map<MockProcessDto>(proc));
+        }
+
+        if (procs.Count == 0)
+        {
+            return null;
+        }
+        return procs;
+
+    }
+    public async Task<MockProcessDto> CreateProcess(MockProcessCreationDto process)
     {
 
         var proc = _mapper.Map<MockProcess>(process);
@@ -64,31 +81,39 @@ public class ProcessService : IProcessService
         // - creating main pool, etc
         await _repository.CreateProcess(proc);
         await _repository.Save();
+
+        return _mapper.Map<MockProcess, MockProcessDto>(proc);
     }
 
     public void KillProcess(int pid)
     {
 
         MockProcess? proc = GetProcessByPid(pid);
-        if (proc == null) {
+        if (proc == null)
+        {
             return;
         }
         _repository.KillProcess(proc);
 
     }
 
-    public void ChangePriority(int prio, int pid)
+    public MockProcessDto? ChangePriority(int prio, int pid)
     {
         if (prio == MockProcess.DEFAULT_PRIORITY)
         { // default priority
-            return;
+            return null;
         }
         if (prio > 90)
         {
             prio = 90; // max priority
         }
 
-        _repository.ChangePriority(prio, pid);
+        var proc = _repository.ChangePriority(prio, pid);
+        if (proc == null)
+        {
+            return null;
+        }
+        return _mapper.Map<MockProcessDto>(proc);
 
     }
 }

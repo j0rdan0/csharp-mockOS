@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using mockOSApi.Models;
 
@@ -26,7 +25,6 @@ public class MockProcessDto()
 public class MockProcessCreationDto()
 {
 
-    [Required]
     public int Pid { get; set; }
     public string? Image { get; set; }
 
