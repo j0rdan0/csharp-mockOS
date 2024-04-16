@@ -1,6 +1,7 @@
 using mockOSApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using mockOSApi.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 
 [ApiController]
@@ -89,7 +90,7 @@ public class ProcessController : Controller
     /// <returns></returns>
     /// 
     [HttpPost]
-
+  //  [Authorize("admin_policy")] // to implement authorization with JWT separately
     public async Task<ActionResult<MockProcessDto>> CreateProcess(MockProcessCreationDto process)
     {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.

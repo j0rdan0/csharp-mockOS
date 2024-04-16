@@ -4,7 +4,7 @@ namespace mockOSApi.Models;
 
 public class MockProcess : OSObject
 {
-    private int _processCounter;
+    //private int _processCounter; will use later, commented to supress warning for the moment
 
     public const int DEFAULT_PRIORITY = 50;
 

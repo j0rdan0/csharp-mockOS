@@ -6,7 +6,7 @@ using mockOSApi.DTO;
 using mockOSApi.Models;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
-
+using System.IdentityModel.Tokens.Jwt;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +27,17 @@ builder.Services.AddDbContext<OSDbContext>(
                .EnableSensitiveDataLogging()
                .EnableDetailedErrors()
        );
+
+// should implement real JWT token generation handler
+builder.Services.AddAuthorizationBuilder()
+  .AddPolicy("admin_policy", policy =>
+        policy
+            .RequireRole("admin")
+            .RequireClaim("scope", "api"));
+
+
+builder.Services.AddHttpLogging(o => { });
+builder.Services.AddAuthentication().AddJwtBearer();
 
 builder.Services.AddScoped(typeof(IProcessRepository), typeof(ProcessRepositoryDb));
 builder.Services.AddScoped(typeof(IProcessService), typeof(ProcessService));
@@ -54,12 +65,14 @@ builder.Services.AddAutoMapper(cfg =>
 });
 var app = builder.Build();
 
-app.UseHttpsRedirection();
+// app.UseHttpLogging();
 
+app.UseHttpsRedirection();
 
 app.UseRouting();
 
 app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "default",
@@ -72,7 +85,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseResponseCaching();
 app.Run();
 
 public partial class Program { }
