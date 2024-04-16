@@ -7,16 +7,21 @@ using mockOSApi.Models;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Azure;
+using Azure.Identity;
+
+
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultDatabase");
+var vaultUri = builder.Configuration["VaultURI"];
 
 
 // Add services to the container.
 builder.Services.AddControllers();
 
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultDatabase");
 
 builder.Services.AddDbContext<OSDbContext>(
            dbContextOptions => dbContextOptions
@@ -39,8 +44,21 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services.AddHttpLogging(o => { });
 builder.Services.AddAuthentication().AddJwtBearer();
 
+
+
 builder.Services.AddScoped(typeof(IProcessRepository), typeof(ProcessRepositoryDb));
 builder.Services.AddScoped(typeof(IProcessService), typeof(ProcessService));
+builder.Services.AddScoped(typeof(IAuthentication), typeof(AuthenticationService));
+builder.Services.AddScoped(typeof(IUserRepositoryKv),typeof(UserRepository));
+
+builder.Services.AddAzureClients(builder => {
+   
+#pragma warning disable CS8604 // Possible null reference argument.
+    builder.AddSecretClient(new Uri(vaultUri));
+#pragma warning restore CS8604 // Possible null reference argument.
+    builder.UseCredential(new EnvironmentCredential());
+         });
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo

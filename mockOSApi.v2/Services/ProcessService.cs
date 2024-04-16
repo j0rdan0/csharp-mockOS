@@ -52,7 +52,7 @@ public class ProcessService : IProcessService
     }
 
     public MockProcessDto GetProcessDtoByPid(int pid) => _mapper.Map<MockProcessDto>(_repository.GetProcessByPid(pid));
-    public MockProcess? GetProcessByPid(int pid) => _repository.ProcessExists(pid) ? _repository.GetProcessByPid(pid): null;
+    public MockProcess? GetProcessByPid(int pid) => _repository.ProcessExists(pid) ? _repository.GetProcessByPid(pid) : null;
 
     public List<MockProcessDto>? GetProcessByName(string name)
     {
@@ -60,8 +60,8 @@ public class ProcessService : IProcessService
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
         foreach (var proc in _repository.GetProcessByName(name))
         {
-                procs.Add(_mapper.Map<MockProcessDto>(proc));
-            
+            procs.Add(_mapper.Map<MockProcessDto>(proc));
+
         }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
 
