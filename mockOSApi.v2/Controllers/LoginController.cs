@@ -1,10 +1,5 @@
 using mockOSApi.Services;
 using Microsoft.AspNetCore.Mvc;
-using mockOSApi.DTO;
-using mockOSApi.Models;
-using System.Collections.Immutable;
-using Microsoft.IdentityModel.Tokens;
-
 
 [ApiController]
 [Route("/api/[controller]")]
@@ -21,8 +16,8 @@ public class LoginController : Controller
         _authentication = authentication;
     }
 
-    // GET api/login/{username:password}
-    [HttpGet("{credential}")]
+    // GET api/login/{username:password} 
+    [HttpGet("{credential}")] // this needs to be changed with POST method asap
     public async Task<ActionResult<string>> Index(string credential)
     {
         var parts = credential.Split(':');

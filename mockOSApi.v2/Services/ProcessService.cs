@@ -78,8 +78,7 @@ public class ProcessService : IProcessService
         // - setting PID automaticall, starting with 2, as PID should be reserved for init
         // - allocating memory
         // - creating main pool, etc
-        // - associated loged in user with current process
-
+        // - check authorization of current user, e.g. to create process etc
 
         // setting Priority to default unless otherwise value is provided already in DTO
         if (proc.Priority == null)
@@ -116,7 +115,6 @@ public class ProcessService : IProcessService
                 proc.FileDescriptors.Add((int)fd);
         }
 
-
         // setting IsService status
 
         if (proc.Image == null)
@@ -130,6 +128,7 @@ public class ProcessService : IProcessService
         {
             proc.ErrorMessage = new ErrorMessages().ErrorMessage["PATH_ERROR"];
             Console.WriteLine(new ErrorMessages().ErrorMessage["PATH_ERROR"]);
+            // still creates a process since this is a mockOS, but at least perform the checking
         }
 
 
@@ -140,8 +139,6 @@ public class ProcessService : IProcessService
         //setting user account context
 
         proc.User = user;
-
-
 
         //setting create time
 
