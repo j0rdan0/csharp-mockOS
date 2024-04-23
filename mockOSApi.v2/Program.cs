@@ -49,15 +49,16 @@ builder.Services.AddAuthentication().AddJwtBearer();
 builder.Services.AddScoped(typeof(IProcessRepository), typeof(ProcessRepositoryDb));
 builder.Services.AddScoped(typeof(IProcessService), typeof(ProcessService));
 builder.Services.AddScoped(typeof(IAuthentication), typeof(AuthenticationService));
-builder.Services.AddScoped(typeof(IUserRepositoryKv),typeof(UserRepository));
+builder.Services.AddScoped(typeof(IUserRepositoryKv), typeof(UserRepository));
 
-builder.Services.AddAzureClients(builder => {
-   
+builder.Services.AddAzureClients(builder =>
+{
+
 #pragma warning disable CS8604 // Possible null reference argument.
     builder.AddSecretClient(new Uri(vaultUri));
 #pragma warning restore CS8604 // Possible null reference argument.
     builder.UseCredential(new EnvironmentCredential());
-         });
+});
 
 builder.Services.AddSwaggerGen(options =>
 {

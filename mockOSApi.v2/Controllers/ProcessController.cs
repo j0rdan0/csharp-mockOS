@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using mockOSApi.DTO;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 
 
 [ApiController]
@@ -13,20 +15,41 @@ public class ProcessController : Controller
     private readonly ILogger<ProcessController> _logger;
     private readonly IProcessService _processService;
 
-    public ProcessController(ILogger<ProcessController> logger, IProcessService processHandler)
+    private readonly IAuthentication _authorizationService;
+
+    public ProcessController(ILogger<ProcessController> logger, IProcessService processHandler, IAuthentication authorizationService)
     {
         _logger = logger;
         _processService = processHandler;
+        _authorizationService = authorizationService;
+    }
 
+    private string? FetchTokenFromHeaders()
+    {
+        string token;
+        try
+        {
+            token = HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
+        }
+        catch (System.IndexOutOfRangeException)
+        {
+            return null;
+        }
+        return token;
     }
 
     // GET /api/process
     [HttpGet]
     public string Index()
     {
+
         _logger.LogInformation("TBD [{0}]", DateTime.Now);
+        if (!_authorizationService.IsUserAuthorized(FetchTokenFromHeaders()))
+            return "not authorized";
+        else
+            return "authorized";
         //  to implement method for returning a random process from proc list
-        return "TBD\n";
+
     }
 
     // GET /api/process/all
@@ -143,5 +166,11 @@ public class ProcessController : Controller
         return NoContent();
 
     } // this is not compliant with PUT method as I should include both MockProcessDto and updates in the body, otherwise use PATCH
+
+    [HttpDelete("all")]
+    public ActionResult KillAllProcess() {
+        _processService.KillAllProcess();
+        return NoContent();
+    }
 }
 
