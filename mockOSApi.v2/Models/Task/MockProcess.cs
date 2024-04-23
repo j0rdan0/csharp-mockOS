@@ -4,51 +4,39 @@ namespace mockOSApi.Models;
 
 public class MockProcess : OSObject
 {
+    public const int DEFAULT_PRIORITY = 50;
 
-     public const int DEFAULT_PRIORITY = 50;
+    public const int MAX_PROC = Int32.MaxValue - 1; // max number of processes that can be spawned 
+
     [Key]
-    public int Pid { get; init; }
-    public int Id { get;set;}
-    public ProcessCounter Counter { get;set;}
+    public int Pid { get; set; }
     public string? Image { get; set; }
-    public ProcState Status { get; set; }
+    public ProcessStatus Status { get; set; }
     public string[]? Args { get; set; }
     public int ExitCode { get; set; }
     public int? Priority { get; set; }
-    private int[]? FileDescriptors { get; set; }
+    public List<int>? FileDescriptors { get; set; }
+    public bool IsService { get; set; }
 
+    public DateTime RunTime { get; set; }
+
+    public int UserUid { get; set; }
+
+    public User User { get; set; }
     public MockProcess(string image, string[]? arguments)
     {
         Image = image;
-
-        // get PID from DB
-
-
-        Status = ProcState.SLEEPING; // should avoid changing this here !!
         Args = arguments;
-        Priority = DEFAULT_PRIORITY;
-        ExitCode = 0;
     }
-
     public MockProcess(string image)
     {
         Image = image;
-      //  Pid = Counter.Counter++;
-        Status = ProcState.SLEEPING;
-        Priority = DEFAULT_PRIORITY;
-
     }
-    public MockProcess()
-    {
-       // Pid = Counter.Counter++;
-        Status = ProcState.SLEEPING;
-        Priority = DEFAULT_PRIORITY;
-    }
-
+    public MockProcess() { }
 
 }
 
-public enum ProcState
+public enum ProcessStatus
 {
     RUNNING,
     SLEEPING,
@@ -67,9 +55,4 @@ public enum DefaultFd
 public interface IProcess
 {
     //TBD
-}
-
-public class ProcessCounter { 
-    public static int Value { get; set;}
-    public int Pid;
 }

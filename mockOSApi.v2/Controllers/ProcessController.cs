@@ -62,7 +62,15 @@ public class ProcessController : Controller
     public ActionResult<List<MockProcessDto>> GetAll()
     {
         _logger.LogInformation("[*] Processes QUERIED [{0}]", DateTime.Now);
-        return Ok(_processService.AllProcesses.ToList());
+        if (_processService.AllProcesses != null)
+        {
+            return Ok(_processService.AllProcesses.ToList());
+        }
+        else
+        {
+            return NoContent();
+        }
+
     }
 
     // GET api/process/[pid]
@@ -117,8 +125,13 @@ public class ProcessController : Controller
     //  [Authorize("admin_policy")] // to implement authorization with JWT separately
     public async Task<ActionResult<MockProcessDto>> CreateProcess(MockProcessCreationDto process)
     {
+        var token = FetchTokenFromHeaders();
+        if (!_authorizationService.IsUserAuthorized(token))
+            return Unauthorized();
+        var user = _authorizationService.GetUser(token);
+
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-        var proc = await _processService.CreateProcess(process);
+        var proc = await _processService.CreateProcess(process, user);
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
         if (proc == null)
         {
@@ -126,6 +139,7 @@ public class ProcessController : Controller
             return BadRequest(process);
         }
         _logger.LogInformation("[*] Process with PID {0} CREATED [{0}]", proc.Pid, DateTime.Now);
+
         return CreatedAtAction(nameof(Get), new { pid = proc.Pid }, proc);
     }
 
@@ -168,7 +182,8 @@ public class ProcessController : Controller
     } // this is not compliant with PUT method as I should include both MockProcessDto and updates in the body, otherwise use PATCH
 
     [HttpDelete("all")]
-    public ActionResult KillAllProcess() {
+    public ActionResult KillAllProcess()
+    {
         _processService.KillAllProcess();
         return NoContent();
     }

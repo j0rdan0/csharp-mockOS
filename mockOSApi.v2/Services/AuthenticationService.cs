@@ -12,6 +12,7 @@ public interface IAuthentication
     public Task<User?> AuthenticateUser(string username, string password);
     public string GenerateToken(User user);
     public bool IsUserAuthorized(string? tokenString);
+    public User? GetUser(string? tokenString);
 }
 
 public class AuthenticationService : IAuthentication
@@ -62,7 +63,6 @@ public class AuthenticationService : IAuthentication
 
     public bool IsUserAuthorized(string? tokenString)
     {
-
         if (tokenString == null)
             return false;
         var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenString);
@@ -75,6 +75,19 @@ public class AuthenticationService : IAuthentication
         }
         return true;
         // more checks to be performed
+    }
+
+    public User? GetUser(string? tokenString)
+    {
+        // checks should be first made by IsUserAuthorized
+        var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenString);
+        var username = token.Claims.FirstOrDefault(c => c.ValueType == ClaimValueTypes.String).Value;
+        var user = new User
+        {
+            Username = username,
+            Role = Roles.Administrator,
+        };
+        return user;
     }
 
 }
