@@ -8,9 +8,11 @@ namespace mockOSApi.Services;
 
 public interface IProcessService
 {
-    public IEnumerable<MockProcessDto> AllProcesses { get; }
+    public IEnumerable<MockProcessDto> GetAllProcesses { get; }
     public MockProcessDto GetProcessDtoByPid(int pid);
     public MockProcess? GetProcessByPid(int pid);
+
+    public List<MockProcessDto>? GetProcessByUser(string username);
     public Task<MockProcessDto>? CreateProcess(MockProcessCreationDto proc, User user);
     void KillProcess(int pid); // should return a Process object ?
     public MockProcessDto? ChangePriority(int prio, int pid);
@@ -23,13 +25,16 @@ public class ProcessService : IProcessService
     public readonly IProcessRepository _repository;
     public readonly IMapper _mapper;
 
-    public ProcessService(IProcessRepository procRepo, IMapper autoMapper)
+    public readonly IMockProcessBuilder _builder;
+
+    public ProcessService(IProcessRepository procRepo, IMapper autoMapper, IMockProcessBuilder builder)
     {
         _repository = procRepo;
         _mapper = autoMapper;
+        _builder = builder;
     }
 
-    public IEnumerable<MockProcessDto>? AllProcesses
+    public IEnumerable<MockProcessDto>? GetAllProcesses
     {
 #pragma warning disable CS8766 
         get
@@ -71,6 +76,21 @@ public class ProcessService : IProcessService
         return procs;
 
     }
+
+    public List<MockProcessDto>? GetProcessByUser(string username)
+    {
+        List<MockProcessDto>? procs = new List<MockProcessDto>();
+        foreach (var proc in _repository.GetAll().Where(proc => proc.User.Username == username))
+        {
+            procs.Add(_mapper.Map<MockProcessDto>(proc));
+        }
+        if (procs.Count == 0)
+        {
+            return null;
+        }
+        return procs;
+
+    }
     public async Task<MockProcessDto>? CreateProcess(MockProcessCreationDto process, User user)
     {
         var proc = _mapper.Map<MockProcess>(process);
@@ -80,85 +100,36 @@ public class ProcessService : IProcessService
         // - creating main pool, etc
         // - check authorization of current user, e.g. to create process etc
 
-        // setting Priority to default unless otherwise value is provided already in DTO
-        if (proc.Priority == null)
-        {
-            proc.Priority = MockProcess.DEFAULT_PRIORITY;
-        }
-
-        // setting PID for process;
-        var count = _repository.GetProcessCount();
-
-        if (!_repository.ProcessExists(count))
-        {
-            proc.Pid = ++count;
-        }
-        else
-        {
-            var newPid = _repository.GetHigestPid();
-            proc.Pid = ++newPid;
-        }
-
-        //setting process state to SLEEPING
-
-        proc.Status = ProcessStatus.SLEEPING;
-
-        //setting process exit code to 0, only to be changed if errors when exiting/creating appear
-
-        proc.ExitCode = 0;
-
-        // opening the default file descriptors (stdin, stdout, stderr)
-        proc.FileDescriptors = new List<int>();
-        foreach (var fd in Enum.GetValues(typeof(DefaultFd)))
-        {
-            if (proc.FileDescriptors != null)
-                proc.FileDescriptors.Add((int)fd);
-        }
-
-        // setting IsService status
-
-        if (proc.Image == null)
-        {
-            proc.IsService = true; // System processes do not export image path to usermode
-        }
-
-        // checking image 
-
-        if (!Path.Exists(proc.Image) && !proc.IsService)
-        {
-            proc.ErrorMessage = new ErrorMessages().ErrorMessage["PATH_ERROR"];
-            Console.WriteLine(new ErrorMessages().ErrorMessage["PATH_ERROR"]);
-            // still creates a process since this is a mockOS, but at least perform the checking
-        }
-
+        // to replace all this shit with builder pattern !!
 
         // TBD allocating memory - heap, VA space etc
 
         // Creating main thread etc
 
-        //setting user account context
+        var newProc = _builder
+        .AddPriority(proc.Priority)
+        .AddPid()
+        .AddProcessStatus()
+        .AddExitCode()
+        .AddDefaultFds()
+        .AddImage(proc.Image)
+        .AddArguments(proc.Args)
+        .AddCreationTime()
+        .AddUserContext(user)
+        .Build();
 
-        proc.User = user;
-
-        //setting create time
-
-        proc.CreationTime = DateTime.Now;
-
-        await _repository.CreateProcess(proc);
-
-        return _mapper.Map<MockProcess, MockProcessDto>(proc);
+        await _repository.CreateProcess(newProc);
+        return _mapper.Map<MockProcess, MockProcessDto>(newProc);
     }
 
     public void KillProcess(int pid)
     {
-
         MockProcess? proc = GetProcessByPid(pid);
         if (proc == null)
         {
             return;
         }
         _repository.KillProcess(proc);
-
     }
     public void KillAllProcess()
     {
@@ -184,5 +155,7 @@ public class ProcessService : IProcessService
         return _mapper.Map<MockProcessDto>(proc);
 
     }
+
+
 
 }

@@ -7,6 +7,9 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 
 
+/// <summary>
+/// Controller responsible with Process handling
+/// </summary>
 [ApiController]
 [Route("/api/[controller]")]
 [Produces("application/json")]
@@ -62,9 +65,9 @@ public class ProcessController : Controller
     public ActionResult<List<MockProcessDto>> GetAll()
     {
         _logger.LogInformation("[*] Processes QUERIED [{0}]", DateTime.Now);
-        if (_processService.AllProcesses != null)
+        if (_processService.GetAllProcesses != null)
         {
-            return Ok(_processService.AllProcesses.ToList());
+            return Ok(_processService.GetAllProcesses.ToList());
         }
         else
         {
@@ -113,6 +116,20 @@ public class ProcessController : Controller
         return Ok(procs);
 
     }
+    [HttpGet("user/{user}")]
+    public ActionResult<List<MockProcessDto?>> GetProcessByUser(string user)
+    {
+        var procs = _processService.GetProcessByUser(user);
+        if (procs == null)
+        {
+            _logger.LogInformation("[*] Processes running under user {0} NOT FOUND [{1}]", user, DateTime.Now);
+            return NotFound();
+        }
+        _logger.LogInformation("[*] Processes running under {0} RETURNED SUCCESSFULLY [{1}]", user, DateTime.Now);
+        return Ok(procs);
+
+    }
+
     // POST api/process
 
     /// <summary>
@@ -122,7 +139,6 @@ public class ProcessController : Controller
     /// <returns></returns>
     /// 
     [HttpPost]
-    //  [Authorize("admin_policy")] // to implement authorization with JWT separately
     public async Task<ActionResult<MockProcessDto>> CreateProcess(MockProcessCreationDto process)
     {
         var token = FetchTokenFromHeaders();

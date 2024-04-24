@@ -5,7 +5,7 @@ namespace mockOSApi.Repository;
 
 public interface IUserRepositoryKv
 {
-    public Task<User> GetUser(string username);
+    public Task<User?> GetUser(string username);
     public Task<User> CreateUser(string username, string password);
     public Task<User> UpdatePassword(string username, string password);
     public Task DeleteUser(string username);
@@ -24,9 +24,13 @@ public class UserRepository : IUserRepositoryKv
     }
 
 
-    public async Task<User> GetUser(string username)
+    public async Task<User?> GetUser(string username)
     {
         var resp = await _secretClient.GetSecretAsync(username);
+        if (resp == null)
+        {
+            return null;
+        }
         var user = new User
         {
             Username = username,

@@ -15,8 +15,8 @@ public class MockThread : IThread
 
     public MockProcess Parent { get; set; }
 
-    public MockThread() {}
-    
+    public MockThread() { }
+
 
     public MockThread(string name) { }
 

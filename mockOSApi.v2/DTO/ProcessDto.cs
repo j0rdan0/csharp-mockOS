@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using mockOSApi.Models;
 
 namespace mockOSApi.DTO;
@@ -16,9 +15,9 @@ public class MockProcessDto()
     public ProcessStatus Status { get; set; }
     public int Priority { get; set; }
     public List<int> FileDescriptors { get; set; }
-    public bool? IsService {get;set;}
+    public bool? IsService { get; set; }
     public string? ErrorMessage { get; set; }
-    public User User {get;set;}
+    public User User { get; set; }
 }
 
 public class MockProcessCreationDto()
@@ -26,6 +25,6 @@ public class MockProcessCreationDto()
     public string? Image { get; set; }
     public string[]? Args { get; set; }
     public int? Priority { get; set; }
-    public bool? IsService { get;set; }
+    public bool? IsService { get; set; }
 }
 

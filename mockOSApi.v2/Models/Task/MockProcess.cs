@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
+
 namespace mockOSApi.Models;
 
 public class MockProcess : OSObject
@@ -23,16 +24,15 @@ public class MockProcess : OSObject
     public int UserUid { get; set; }
 
     public User User { get; set; }
+    /*
     public MockProcess(string image, string[]? arguments)
     {
-        Image = image;
-        Args = arguments;
     }
     public MockProcess(string image)
     {
-        Image = image;
     }
     public MockProcess() { }
+    */
 
 }
 

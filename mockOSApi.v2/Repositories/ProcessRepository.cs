@@ -11,7 +11,7 @@ public interface IProcessRepository
     public List<MockProcess>? GetProcessByName(string name);
     public int GetProcessCount();
     public int GetHigestPid();
-    Task CreateProcess();
+    //  Task CreateProcess();
     void KillProcess(MockProcess proc);
     void KillAllProcess();
     MockProcess? ChangePriority(int prio, int pid);
@@ -25,7 +25,6 @@ public class ProcessRepositoryDb : IProcessRepository
 {
     private readonly OSDbContext _dbContext;
     public IEnumerable<MockProcess> GetAll() => _dbContext.MockProcesses.Include(m => m.User).OrderBy(p => p.Pid).ToList();
-
     public int GetProcessCount() => _dbContext.MockProcesses.Count<MockProcess>();
     public int GetHigestPid()
     {
@@ -40,13 +39,6 @@ public class ProcessRepositoryDb : IProcessRepository
     public List<MockProcess> GetProcessByName(string name) => _dbContext.MockProcesses.Include(m => m.User).Where<MockProcess>(p => p.Image.Contains(name)).ToList();
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
 
-    //create a dummy process for testing purposes
-    public async Task CreateProcess()
-    {
-        await _dbContext.AddAsync<MockProcess>(new MockProcess(String.Empty, null));
-        await _dbContext.SaveChangesAsync();
-
-    }
     public async Task CreateProcess(MockProcess proc)
     {
         await _dbContext.AddAsync<MockProcess>(proc);
