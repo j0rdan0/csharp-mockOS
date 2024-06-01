@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Microsoft.Extensions.Azure;
 using Azure.Identity;
+using Microsoft.Extensions.Hosting;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -96,6 +97,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseResponseCaching();
+
+
+Startup.StartBoot(app,app.Environment,app.Lifetime);
 app.Run();
+
+
 
 public partial class Program { }

@@ -1,11 +1,6 @@
 using mockOSApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using mockOSApi.DTO;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-
 
 /// <summary>
 /// Controller responsible with Process handling

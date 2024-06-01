@@ -8,6 +8,7 @@ public class PriorityClass()
     public int Pid { get; set; }
 }
 
+
 public class MockProcessDto()
 {
     public int Pid { get; set; }
@@ -17,7 +18,7 @@ public class MockProcessDto()
     public List<int> FileDescriptors { get; set; }
     public bool? IsService { get; set; }
     public string? ErrorMessage { get; set; }
-    public User User { get; set; }
+    public UserDTO User { get; set; }
 }
 
 public class MockProcessCreationDto()

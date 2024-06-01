@@ -2,7 +2,7 @@ namespace mockOSApi.Models;
 
 public interface IThread
 {
-    public void Run();
+    public void Run(string[]? param);
 }
 public class MockThread : IThread
 {
@@ -20,8 +20,7 @@ public class MockThread : IThread
 
     public MockThread(string name) { }
 
-
-    public void Run()
+    public void Run(string[] param)
     {
 
     }
