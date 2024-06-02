@@ -1,6 +1,7 @@
 using mockOSApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using mockOSApi.DTO;
+using Microsoft.Extensions.Localization;
 
 /// <summary>
 /// Controller responsible with Process handling
@@ -11,15 +12,18 @@ using mockOSApi.DTO;
 public class ProcessController : Controller
 {
     private readonly ILogger<ProcessController> _logger;
+
+    private readonly IStringLocalizer<ErrorMessage> _localizer;
     private readonly IProcessService _processService;
 
     private readonly IAuthentication _authorizationService;
 
-    public ProcessController(ILogger<ProcessController> logger, IProcessService processHandler, IAuthentication authorizationService)
+    public ProcessController(ILogger<ProcessController> logger, IProcessService processHandler, IAuthentication authorizationService,IStringLocalizer<ErrorMessage> localizer)
     {
         _logger = logger;
         _processService = processHandler;
         _authorizationService = authorizationService;
+        _localizer = localizer;
     }
 
     private string? FetchTokenFromHeaders()
@@ -40,7 +44,6 @@ public class ProcessController : Controller
     [HttpGet]
     public string Index()
     {
-
         _logger.LogInformation("TBD [{0}]", DateTime.Now);
         if (!_authorizationService.IsUserAuthorized(FetchTokenFromHeaders()))
             return "not authorized";
@@ -148,6 +151,10 @@ public class ProcessController : Controller
         {
             _logger.LogInformation("[*] Process could not be CREATED [{0}]", DateTime.Now);
             return BadRequest(process);
+        }
+        if( proc.ErrorMessage != string.Empty) {
+            _logger.LogInformation("[*] {0} [{1}]",proc.ErrorMessage,DateTime.Now); // this is for when image is invalid, this is checked, but since outside of scope,
+                                                        // the proc is still created with invalid image, but this is logged
         }
         _logger.LogInformation("[*] Process with PID {0} CREATED [{0}]", proc.Pid, DateTime.Now);
 

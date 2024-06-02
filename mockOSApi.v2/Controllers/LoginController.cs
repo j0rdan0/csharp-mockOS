@@ -8,12 +8,12 @@ using mockOSApi.DTO;
 [ApiController]
 [Route("/api/[controller]")]
 [Produces("application/json")]
-public class AdminController : Controller
+public class LoginController : Controller
 {
     private readonly ILogger<ProcessController> _logger;
     private readonly IAuthentication _authentication;
 
-    public AdminController(ILogger<ProcessController> logger, IAuthentication authentication)
+    public LoginController(ILogger<ProcessController> logger, IAuthentication authentication)
     {
         _logger = logger;
         _authentication = authentication;
@@ -24,7 +24,7 @@ public class AdminController : Controller
     /// </summary>
     /// <param name="user">A username and a password member; anonymous access is allowed</param>
     /// <returns>A JWT token if user authenticated successfully</returns>
-    [HttpPost("login")]
+    [HttpPost]
     public async Task<ActionResult<string>> Login(UserCreationDTO user)
     {
         var username = user.Username.ToLower();

@@ -1,5 +1,4 @@
 using mockOSApi.Repository;
-using mockOSApi.Errors;
 
 namespace mockOSApi.Models;
 
@@ -23,10 +22,14 @@ public class MockProcessBuilder : IMockProcessBuilder
     private MockProcess _proc = new MockProcess();
     private IProcessRepository _repository;
 
+    private IErrorMessage _errorMessageService;
+
     // get empty MockProcess object
-    public MockProcessBuilder(IProcessRepository repository)
+    public MockProcessBuilder(IProcessRepository repository, IErrorMessage errorMessageService)
     {
         _repository = repository;
+
+        _errorMessageService = errorMessageService;
         Reset();
     }
 
@@ -93,9 +96,8 @@ public class MockProcessBuilder : IMockProcessBuilder
 
         if (!Path.Exists(image) && !_proc.IsService)
         {
-            _proc.ErrorMessage = new ErrorMessages().ErrorMessage["PATH_ERROR"];
-            Console.WriteLine(new ErrorMessages().ErrorMessage["PATH_ERROR"]);
-            // still creates a process since this is a mockOS, but at least perform the checking
+            _proc.ErrorMessage = _errorMessageService.GetMessage("PATH_ERROR");
+            // still creates a process since this is a mockOS, but at least performs the checking and sets the appropriate ErrorMessage for logging
         }
         _proc.Image = image;
         return this;

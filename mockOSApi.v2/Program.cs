@@ -8,7 +8,6 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Microsoft.Extensions.Azure;
 using Azure.Identity;
-using Microsoft.Extensions.Hosting;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +29,12 @@ builder.Services.AddDbContext<OSDbContext>(
                .EnableDetailedErrors()
        );
 
+builder.Services.AddLocalization(options =>
+{
+    options.ResourcesPath = "Resources";
+});
+
+
 builder.Services.AddHttpLogging(o => { });
 
 builder.Services.AddScoped(typeof(IProcessRepository), typeof(ProcessRepositoryDb));
@@ -37,6 +42,8 @@ builder.Services.AddScoped(typeof(IProcessService), typeof(ProcessService));
 builder.Services.AddScoped(typeof(IAuthentication), typeof(AuthenticationService));
 builder.Services.AddScoped(typeof(IUserRepositoryKv), typeof(UserRepository));
 builder.Services.AddScoped(typeof(IMockProcessBuilder), typeof(MockProcessBuilder));
+builder.Services.AddScoped(typeof(IErrorMessage), typeof(ErrorMessage));
+
 
 builder.Services.AddAzureClients(builder =>
 {
@@ -74,6 +81,9 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.CreateMap<UserDTO, User>();
 
 });
+
+
+
 var app = builder.Build();
 
 // app.UseHttpLogging();
@@ -99,7 +109,7 @@ if (app.Environment.IsDevelopment())
 app.UseResponseCaching();
 
 
-Startup.StartBoot(app,app.Environment,app.Lifetime);
+Startup.StartBoot(app, app.Environment, app.Lifetime);
 app.Run();
 
 
