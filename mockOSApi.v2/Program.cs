@@ -6,17 +6,18 @@ using mockOSApi.DTO;
 using mockOSApi.Models;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
-using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Azure;
+using Azure.Identity;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultDatabase");
+var vaultUri = builder.Configuration["VaultURI"];
 
 // Add services to the container.
 builder.Services.AddControllers();
 
-
-var connectionString = builder.Configuration.GetConnectionString("DefaultDatabase");
 
 builder.Services.AddDbContext<OSDbContext>(
            dbContextOptions => dbContextOptions
@@ -28,19 +29,31 @@ builder.Services.AddDbContext<OSDbContext>(
                .EnableDetailedErrors()
        );
 
-// should implement real JWT token generation handler
-builder.Services.AddAuthorizationBuilder()
-  .AddPolicy("admin_policy", policy =>
-        policy
-            .RequireRole("admin")
-            .RequireClaim("scope", "api"));
+builder.Services.AddLocalization(options =>
+{
+    options.ResourcesPath = "Resources";
+});
 
 
 builder.Services.AddHttpLogging(o => { });
-builder.Services.AddAuthentication().AddJwtBearer();
 
 builder.Services.AddScoped(typeof(IProcessRepository), typeof(ProcessRepositoryDb));
 builder.Services.AddScoped(typeof(IProcessService), typeof(ProcessService));
+builder.Services.AddScoped(typeof(IAuthentication), typeof(AuthenticationService));
+builder.Services.AddScoped(typeof(IUserRepositoryKv), typeof(UserRepository));
+builder.Services.AddScoped(typeof(IMockProcessBuilder), typeof(MockProcessBuilder));
+builder.Services.AddScoped(typeof(IErrorMessage), typeof(ErrorMessage));
+
+
+builder.Services.AddAzureClients(builder =>
+{
+
+#pragma warning disable CS8604 // Possible null reference argument.
+    builder.AddSecretClient(new Uri(vaultUri));
+#pragma warning restore CS8604 // Possible null reference argument.
+    builder.UseCredential(new EnvironmentCredential());
+});
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
@@ -62,7 +75,15 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.CreateMap<MockProcessDto, MockProcess>();
     cfg.CreateMap<MockProcessCreationDto, MockProcessDto>();
 
+    cfg.CreateMap<User, UserDTO>();
+    cfg.CreateMap<User, UserCreationDTO>();
+    cfg.CreateMap<UserCreationDTO, User>();
+    cfg.CreateMap<UserDTO, User>();
+
 });
+
+
+
 var app = builder.Build();
 
 // app.UseHttpLogging();
@@ -86,6 +107,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseResponseCaching();
+
+
+Startup.StartBoot(app, app.Environment, app.Lifetime);
 app.Run();
+
+
 
 public partial class Program { }

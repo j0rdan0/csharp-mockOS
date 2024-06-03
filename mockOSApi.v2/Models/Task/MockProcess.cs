@@ -1,97 +1,42 @@
 using System.ComponentModel.DataAnnotations;
 
+
 namespace mockOSApi.Models;
 
 public class MockProcess : OSObject
 {
-    //private int _processCounter; will use later, commented to supress warning for the moment
-
     public const int DEFAULT_PRIORITY = 50;
 
-    public static int ProcessCounter
-    { // need to replace this with the number of actual rows in Process table;
-        get; set;
-    }
-    private int _exitCode;
-    private int _pid;
-    private string? _image; // do I really need the private fields
-    private int _prio;
-    private int[]? _fds;
-    private string[]? _arguments;
-    public ProcState _state;
+    public const int MAX_PROC = Int32.MaxValue - 1; // max number of processes that can be spawned 
 
     [Key]
-    public int Pid
-    {
-        get => _pid;
-        init => _pid = value;
-    }
-    public string? Image
-    {
-        get => _image;
-        set => _image = value;
-    }
+    public int Pid { get; set; }
+    public string? Image { get; set; }
+    public ProcessStatus Status { get; set; }
+    public string[]? Args { get; set; }
+    public int ExitCode { get; set; }
+    public int? Priority { get; set; }
+    public List<int>? FileDescriptors { get; set; }
+    public bool IsService { get; set; }
 
-    public ProcState Status
-    {
-        get => _state;
-        set => _state = value;
-    }
+    public DateTime RunTime { get; set; }
 
-    public string[]? Args
-    {
-        get => _arguments;
-        set => _arguments = value;
-    }
+    public int UserUid { get; set; }
 
-    public int ExitCode
-    {
-        get => _exitCode;
-        set => _exitCode = ExitCode;
-    }
-    public int Priority
-    {
-        get => _prio;
-        set => _prio = value;
-
-    }
-
-    private int[]? FileDescriptors
-    {
-        get => _fds;
-        set => _fds = value;
-    }
-
+    public User User { get; set; }
+    /*
     public MockProcess(string image, string[]? arguments)
     {
-        Image = image;
-
-        // get PID from DB
-
-        Status = ProcState.SLEEPING; // should avoid changing this here !!
-        Args = arguments;
-        Priority = 50; //default value
-        _exitCode = 0;
     }
-
     public MockProcess(string image)
     {
-        Image = image;
-
-        Status = ProcState.SLEEPING;
-        Priority = 50; //default value
-
     }
-    public MockProcess()
-    {
-        Status = ProcState.SLEEPING;
-        Priority = DEFAULT_PRIORITY;
-    }
-
+    public MockProcess() { }
+    */
 
 }
 
-public enum ProcState
+public enum ProcessStatus
 {
     RUNNING,
     SLEEPING,

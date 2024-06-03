@@ -7,14 +7,15 @@ namespace mockOSApi.Services;
 
 public interface IProcessService
 {
-    public IEnumerable<MockProcessDto> AllProcesses { get; }
-
+    public IEnumerable<MockProcessDto> GetAllProcesses { get; }
     public MockProcessDto GetProcessDtoByPid(int pid);
     public MockProcess? GetProcessByPid(int pid);
-    public Task<MockProcessDto>? CreateProcess(MockProcessCreationDto proc);
-    void KillProcess(int pid);
-    public MockProcessDto? ChangePriority(int prio, int pid);
 
+    public List<MockProcessDto>? GetProcessByUser(string username);
+    public Task<MockProcessDto>? CreateProcess(MockProcessCreationDto proc, User user);
+    void KillProcess(int pid); // should return a Process object ?
+    public MockProcessDto? ChangePriority(int prio, int pid);
+    public void KillAllProcess();
     public List<MockProcessDto>? GetProcessByName(string name);
 }
 
@@ -23,16 +24,18 @@ public class ProcessService : IProcessService
     public readonly IProcessRepository _repository;
     public readonly IMapper _mapper;
 
-    public ProcessService(IProcessRepository procRepo, IMapper autoMapper)
+    public readonly IMockProcessBuilder _builder;
+
+    public ProcessService(IProcessRepository procRepo, IMapper autoMapper, IMockProcessBuilder builder)
     {
         _repository = procRepo;
         _mapper = autoMapper;
+        _builder = builder;
     }
 
-    public IEnumerable<MockProcessDto>? AllProcesses
+    public IEnumerable<MockProcessDto>? GetAllProcesses
     {
 #pragma warning disable CS8766 
-
         get
 #pragma warning restore CS8766 
 
@@ -52,7 +55,7 @@ public class ProcessService : IProcessService
     }
 
     public MockProcessDto GetProcessDtoByPid(int pid) => _mapper.Map<MockProcessDto>(_repository.GetProcessByPid(pid));
-    public MockProcess? GetProcessByPid(int pid) => _repository.ProcessExists(pid) ? _repository.GetProcessByPid(pid): null;
+    public MockProcess? GetProcessByPid(int pid) => _repository.ProcessExists(pid) ? _repository.GetProcessByPid(pid) : null;
 
     public List<MockProcessDto>? GetProcessByName(string name)
     {
@@ -60,8 +63,8 @@ public class ProcessService : IProcessService
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
         foreach (var proc in _repository.GetProcessByName(name))
         {
-                procs.Add(_mapper.Map<MockProcessDto>(proc));
-            
+            procs.Add(_mapper.Map<MockProcessDto>(proc));
+
         }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
 
@@ -72,32 +75,64 @@ public class ProcessService : IProcessService
         return procs;
 
     }
-    public async Task<MockProcessDto> CreateProcess(MockProcessCreationDto process)
-    {
 
+    public List<MockProcessDto>? GetProcessByUser(string username)
+    {
+        List<MockProcessDto>? procs = new List<MockProcessDto>();
+        foreach (var proc in _repository.GetAll().Where(proc => proc.User.Username == username))
+        {
+            procs.Add(_mapper.Map<MockProcessDto>(proc));
+        }
+        if (procs.Count == 0)
+        {
+            return null;
+        }
+        return procs;
+
+    }
+    public async Task<MockProcessDto>? CreateProcess(MockProcessCreationDto process, User user)
+    {
         var proc = _mapper.Map<MockProcess>(process);
         //here I need to handle:
         // - setting PID automaticall, starting with 2, as PID should be reserved for init
-        // - setting priority to default, unless already set in DTO
-        // - setting Status to Sleeping
         // - allocating memory
         // - creating main pool, etc
-        await _repository.CreateProcess(proc);
-        await _repository.Save();
+        // - check authorization of current user, e.g. to create process etc
 
-        return _mapper.Map<MockProcess, MockProcessDto>(proc);
+        // to replace all this shit with builder pattern !!
+
+        // TBD allocating memory - heap, VA space etc
+
+        // Creating main thread etc
+
+        var newProc = _builder
+        .AddPriority(proc.Priority)
+        .AddPid()
+        .AddProcessStatus()
+        .AddExitCode()
+        .AddDefaultFds()
+        .AddImage(proc.Image)
+        .AddArguments(proc.Args)
+        .AddCreationTime()
+        .AddUserContext(user)
+        .Build();
+
+        await _repository.CreateProcess(newProc);
+        return _mapper.Map<MockProcess, MockProcessDto>(newProc);
     }
 
     public void KillProcess(int pid)
     {
-
         MockProcess? proc = GetProcessByPid(pid);
         if (proc == null)
         {
             return;
         }
         _repository.KillProcess(proc);
-
+    }
+    public void KillAllProcess()
+    {
+        _repository.KillAllProcess();
     }
 
     public MockProcessDto? ChangePriority(int prio, int pid)
@@ -119,4 +154,7 @@ public class ProcessService : IProcessService
         return _mapper.Map<MockProcessDto>(proc);
 
     }
+
+
+
 }
