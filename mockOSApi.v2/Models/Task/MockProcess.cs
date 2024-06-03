@@ -19,7 +19,7 @@ public class MockProcess : OSObject
     public List<int>? FileDescriptors { get; set; }
     public bool IsService { get; set; }
 
-    public DateTime RunTime { get; set; }
+    public TimeSpan RunTime { get; set; }
 
     public int UserUid { get; set; }
 

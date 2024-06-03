@@ -39,7 +39,7 @@ builder.Services.AddHttpLogging(o => { });
 
 builder.Services.AddScoped(typeof(IProcessRepository), typeof(ProcessRepositoryDb));
 builder.Services.AddScoped(typeof(IProcessService), typeof(ProcessService));
-builder.Services.AddScoped(typeof(IAuthentication), typeof(AuthenticationService));
+builder.Services.AddScoped(typeof(IAuthenticationService), typeof(AuthenticationService));
 builder.Services.AddScoped(typeof(IUserRepositoryKv), typeof(UserRepository));
 builder.Services.AddScoped(typeof(IMockProcessBuilder), typeof(MockProcessBuilder));
 builder.Services.AddScoped(typeof(IErrorMessage), typeof(ErrorMessage));

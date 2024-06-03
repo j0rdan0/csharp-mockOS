@@ -9,7 +9,7 @@ using AutoMapper;
 
 namespace mockOSApi.Services;
 
-public interface IAuthentication
+public interface IAuthenticationService
 {
     public Task<User?> AuthenticateUser(string username, string password);
     public string GenerateToken(User user);
@@ -18,7 +18,7 @@ public interface IAuthentication
     public Task<UserDTO?> RegisterUser(UserCreationDTO userTemplate);
 }
 
-public class AuthenticationService : IAuthentication
+public class AuthenticationService : IAuthenticationService
 {
     private readonly IUserRepositoryKv _userRepositoryKv;
     private readonly IConfiguration _configuration;
@@ -40,7 +40,7 @@ public class AuthenticationService : IAuthentication
             return new User
             {
                 Username = username,
-                Role = Roles.User
+                Role = Role.User
             };
         }
         if (!_userRepositoryKv.UserExists(username))
@@ -100,7 +100,7 @@ public class AuthenticationService : IAuthentication
         var user = new User
         {
             Username = username,
-            Role = Roles.Administrator,
+            Role = Role.Administrator,
         };
         return user;
     }

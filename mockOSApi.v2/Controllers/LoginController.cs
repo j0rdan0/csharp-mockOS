@@ -11,9 +11,9 @@ using mockOSApi.DTO;
 public class LoginController : Controller
 {
     private readonly ILogger<ProcessController> _logger;
-    private readonly IAuthentication _authentication;
+    private readonly IAuthenticationService _authentication;
 
-    public LoginController(ILogger<ProcessController> logger, IAuthentication authentication)
+    public LoginController(ILogger<ProcessController> logger, IAuthenticationService authentication)
     {
         _logger = logger;
         _authentication = authentication;

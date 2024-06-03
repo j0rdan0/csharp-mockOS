@@ -16,9 +16,9 @@ public class ProcessController : Controller
     private readonly IStringLocalizer<ErrorMessage> _localizer;
     private readonly IProcessService _processService;
 
-    private readonly IAuthentication _authorizationService;
+    private readonly IAuthenticationService _authorizationService;
 
-    public ProcessController(ILogger<ProcessController> logger, IProcessService processHandler, IAuthentication authorizationService,IStringLocalizer<ErrorMessage> localizer)
+    public ProcessController(ILogger<ProcessController> logger, IProcessService processHandler, IAuthenticationService authorizationService,IStringLocalizer<ErrorMessage> localizer)
     {
         _logger = logger;
         _processService = processHandler;
@@ -32,11 +32,15 @@ public class ProcessController : Controller
         try
         {
             token = HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
+            if (HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[0] != "Bearer") {
+                return null;
+            }
         }
         catch (System.IndexOutOfRangeException)
         {
             return null;
         }
+        
         return token;
     }
 
