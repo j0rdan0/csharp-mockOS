@@ -45,6 +45,8 @@ builder.Services.AddScoped(typeof(IAuthenticationService), typeof(Authentication
 builder.Services.AddScoped(typeof(IUserRepositoryKv), typeof(UserRepository));
 builder.Services.AddScoped(typeof(IMockProcessBuilder), typeof(MockProcessBuilder));
 builder.Services.AddScoped(typeof(IErrorMessage), typeof(ErrorMessage));
+builder.Services.AddScoped(typeof(IMockThreadBuilder), typeof(MockThreadBuilder));
+builder.Services.AddScoped(typeof(IMemoryAllocatorService),typeof(MemoryAllocatorService));
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Startup).Assembly));
 

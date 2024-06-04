@@ -1,7 +1,6 @@
 using mockOSApi.Services;
 using Microsoft.AspNetCore.Mvc;
 using mockOSApi.DTO;
-using Microsoft.Extensions.Localization;
 
 
 /// <summary>
@@ -22,25 +21,21 @@ public class ThreadController: Controller {
     }
 
      [HttpPost]
-    public async Task<ActionResult<MockProcessDto>> CreateProcess(MockThreadCreationDto thread)
+    public async Task<ActionResult<MockThreadDto>> CreateProcess(MockThreadCreationDto thread)
     {
-        
+        var t = await _threadService.CreateThread(thread);
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-        var proc = await _threadService.CreateThread(thread);
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
-        if (proc == null)
+        if (t == null)
         {
-            _logger.LogInformation("[*] Process could not be CREATED [{0}]", DateTime.Now);
-            return BadRequest(process);
+            _logger.LogInformation("[*] Thread could not be CREATED [{0}]", DateTime.Now);
+            return BadRequest(thread);
         }
-        if( proc.ErrorMessage != string.Empty) {
-            _logger.LogInformation("[*] {0} [{1}]",proc.ErrorMessage,DateTime.Now); // this is for when image is invalid, this is checked, but since outside of scope,
-                                                        // the proc is still created with invalid image, but this is logged
-        }
-        _logger.LogInformation("[*] Process with PID {0} CREATED [{0}]", proc.Pid, DateTime.Now);
+        if( t.ErrorMessage != string.Empty) {
+            _logger.LogInformation("[*] {0} [{1}]",t.ErrorMessage,DateTime.Now); // this is for when errors are catched, but only logged
+        }                                            
+        _logger.LogInformation("[*] Thread with TID {0} CREATED [{0}]", t.Tid, DateTime.Now);
 
-        return CreatedAtAction(nameof(Get), new { pid = proc.Pid }, proc);
+        return Ok(t);
     }
 
 

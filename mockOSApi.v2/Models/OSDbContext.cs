@@ -15,13 +15,14 @@ public class OSDbContext : DbContext
             .WithMany()
                        // User can be associated with many MockProcesses
             .HasForeignKey(m => m.UserUid)
+          
              .OnDelete(DeleteBehavior.Cascade); // Foreign key property in MockProcess
     }
 
     public DbSet<MockProcess> MockProcesses { get; set; }
     public DbSet<User> User { get; set; }
-
     public DbSet<MockThread> MockThreads { get; set; }
+    public DbSet<MockThreadStack> MockThreadStacks { get; set; }
 
 }
 

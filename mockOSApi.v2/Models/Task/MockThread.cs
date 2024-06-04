@@ -14,7 +14,7 @@ public class MockThread : OSObject
     public ThreadStatus Status { get; set; }
     public string? Name { get; set; } // thread name
     public int ExitCode { get; set; }
-    public Stack<byte[]> Stack { get; set; } // needs to be allocated by VM manager, size of 1024 
+    public MockThreadStack Stack { get; set; }// needs to be allocated by VM manager, size of 1024 
     public MockProcess Parent { get; set; }
 
 }
