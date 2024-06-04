@@ -94,12 +94,10 @@ public class ProcessService : IProcessService
     {
         var proc = _mapper.Map<MockProcess>(process);
         //here I need to handle:
-        // - setting PID automaticall, starting with 2, as PID should be reserved for init
+       
         // - allocating memory
         // - creating main pool, etc
-        // - check authorization of current user, e.g. to create process etc
-
-        // to replace all this shit with builder pattern !!
+      
 
         // TBD allocating memory - heap, VA space etc
 

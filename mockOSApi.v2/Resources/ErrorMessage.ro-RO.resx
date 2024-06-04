@@ -121,4 +121,8 @@
     <value>Calea nu există sau nu a putut fi găsită</value>
     <comment/>
   </data>
+  <data name="ERR_NOFUNC" xml:space="preserve">
+    <value> Funcția de pornire specificată nu a fost găsită sau nu există</value>
+    <comment/>
+  </data>
 </root>

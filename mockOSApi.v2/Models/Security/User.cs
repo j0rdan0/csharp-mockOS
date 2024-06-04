@@ -4,11 +4,13 @@ namespace mockOSApi.Models;
 
 public record User
 {
+    private Role[] roles;
+
     [Key]
     public int Uid { get; set; }
     public string? Username { get; set; }
     public string? Password { get; set; }
-    public Role[] Roles { get; set; }
+    public Role[] Roles { get => roles; set => roles = value; }
 
 };
 

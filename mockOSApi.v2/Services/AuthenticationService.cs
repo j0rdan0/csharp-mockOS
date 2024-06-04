@@ -40,7 +40,8 @@ public class AuthenticationService : IAuthenticationService
             return new User
             {
                 Username = username,
-                Role = Role.User
+               // Roles[0] = Role.User;
+               Roles = new  Role[]{Role.User}
             };
         }
         if (!_userRepositoryKv.UserExists(username))
@@ -100,7 +101,8 @@ public class AuthenticationService : IAuthenticationService
         var user = new User
         {
             Username = username,
-            Role = Role.Administrator,
+           // Role = Role.Administrator,
+           Roles = new Role[]{Role.Administrator}
         };
         return user;
     }

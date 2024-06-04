@@ -39,6 +39,9 @@ namespace mockOSApi.v2.Migrations
                     b.Property<string>("ErrorMessage")
                         .HasColumnType("longtext");
 
+                    b.Property<TimeSpan>("ExecutionTime")
+                        .HasColumnType("time(6)");
+
                     b.Property<int>("ExitCode")
                         .HasColumnType("int");
 
@@ -57,9 +60,6 @@ namespace mockOSApi.v2.Migrations
                     b.Property<int?>("Priority")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("RunTime")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -73,6 +73,49 @@ namespace mockOSApi.v2.Migrations
                     b.ToTable("MockProcesses");
                 });
 
+            modelBuilder.Entity("mockOSApi.Models.MockThread", b =>
+                {
+                    b.Property<int>("Tid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Tid"));
+
+                    b.Property<DateTime?>("CreationTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ExitCode")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Handle")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ParentPid")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Stack")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("StartFunction")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Tid");
+
+                    b.HasIndex("ParentPid");
+
+                    b.ToTable("MockThreads");
+                });
+
             modelBuilder.Entity("mockOSApi.Models.User", b =>
                 {
                     b.Property<int>("Uid")
@@ -84,15 +127,16 @@ namespace mockOSApi.v2.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Role")
-                        .HasColumnType("int");
+                    b.Property<string>("Roles")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Username")
                         .HasColumnType("longtext");
 
                     b.HasKey("Uid");
 
-                    b.ToTable("Users");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("mockOSApi.Models.MockProcess", b =>
@@ -104,6 +148,22 @@ namespace mockOSApi.v2.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("mockOSApi.Models.MockThread", b =>
+                {
+                    b.HasOne("mockOSApi.Models.MockProcess", "Parent")
+                        .WithMany("Threads")
+                        .HasForeignKey("ParentPid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("mockOSApi.Models.MockProcess", b =>
+                {
+                    b.Navigation("Threads");
                 });
 #pragma warning restore 612, 618
         }

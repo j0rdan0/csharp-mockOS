@@ -39,10 +39,14 @@ builder.Services.AddHttpLogging(o => { });
 
 builder.Services.AddScoped(typeof(IProcessRepository), typeof(ProcessRepositoryDb));
 builder.Services.AddScoped(typeof(IProcessService), typeof(ProcessService));
+builder.Services.AddScoped(typeof(IThreadRepository),typeof(ThreadRepositoryDb));
+builder.Services.AddScoped(typeof(IThreadService), typeof(ThreadService));
 builder.Services.AddScoped(typeof(IAuthenticationService), typeof(AuthenticationService));
 builder.Services.AddScoped(typeof(IUserRepositoryKv), typeof(UserRepository));
 builder.Services.AddScoped(typeof(IMockProcessBuilder), typeof(MockProcessBuilder));
 builder.Services.AddScoped(typeof(IErrorMessage), typeof(ErrorMessage));
+
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Startup).Assembly));
 
 
 builder.Services.AddAzureClients(builder =>
@@ -79,6 +83,11 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.CreateMap<User, UserCreationDTO>();
     cfg.CreateMap<UserCreationDTO, User>();
     cfg.CreateMap<UserDTO, User>();
+
+    cfg.CreateMap<MockThread,MockThreadDto>();
+    cfg.CreateMap<MockThreadCreationDto, MockThread>();
+    cfg.CreateMap<MockThreadCreationDto,MockThreadDto>();
+    cfg.CreateMap<MockThreadDto,MockThread>();
 
 });
 

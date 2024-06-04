@@ -121,4 +121,8 @@
     <value>The specified path could not be found or does not exist</value>
     <comment/>
   </data>
+  <data name="ERR_NOFUNC" xml:space="preserve">
+    <value>The specified start function not found or does not exist</value>
+    <comment/>
+  </data>
 </root>

@@ -18,12 +18,11 @@ public class MockProcess : OSObject
     public int? Priority { get; set; }
     public List<int>? FileDescriptors { get; set; }
     public bool IsService { get; set; }
-
-    public TimeSpan RunTime { get; set; }
-
-    public int UserUid { get; set; }
-
+    //public int UserUid { get; set; }
+    public TimeSpan ExecutionTime { get; set; }
     public User User { get; set; }
+    public int UserUid  {get;set;}
+    public List<MockThread> Threads { get; set; }
     /*
     public MockProcess(string image, string[]? arguments)
     {
