@@ -1,10 +1,9 @@
 using mockOSApi.Models;
 using mockOSApi.DTO;
 using AutoMapper;
-
+using mockOSApi.Utils;
 
 namespace mockOSApi.Services;
-
 
 public interface IThreadService
 {
@@ -20,6 +19,8 @@ public class ThreadService : IThreadService
     public readonly IThreadRepository _repository;
     public readonly IMockThreadBuilder _builder;
     public readonly IProcessService _processService;
+
+    private static readonly TidManager tidManager = new TidManager();
     public ThreadService(IMapper automaper, IThreadRepository repository, IMockThreadBuilder builder, IProcessService processService)
     {
         _mapper = automaper;
@@ -38,13 +39,13 @@ public class ThreadService : IThreadService
             return null;
         }
         var newThread = _builder
+        .AddParentProcess(parent)
         .AddTid()
         .AddThreadStatus()
         .AddExitCode()
         .AddStartFunction(thread.StartFunction)
         .AddCreationTime()
         .AddStack()
-        .AddParentProcess(parent)
         .Build();
 
         await _repository.CreateThread(newThread);
@@ -60,6 +61,7 @@ public class ThreadService : IThreadService
         if (t == null) {
             return false;
         }
+        tidManager.RecycleTid(t.Parent.Pid,tid); // recycle the TID;
         _repository.TerminateThread(t);
         return true;
     }

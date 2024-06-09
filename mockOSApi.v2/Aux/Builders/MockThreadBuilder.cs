@@ -1,5 +1,7 @@
 using MediatR;
 using mockOSApi.Requests;
+using mockOSApi.Utils;
+
 
 
 namespace mockOSApi.Models;
@@ -19,6 +21,7 @@ public interface IMockThreadBuilder
 public class MockThreadBuilder : IMockThreadBuilder
 {
     private MockThread _thread = new MockThread();
+    private static readonly TidManager tidManager = new TidManager();
 
     private readonly IMediator _mediator;
     private IThreadRepository _repository;
@@ -28,6 +31,13 @@ public class MockThreadBuilder : IMockThreadBuilder
         _repository = repository;
         _errorMessageService = errorMessageService;
         _mediator = mediator;
+    }
+
+    public MockThreadBuilder AddParentProcess(MockProcess parent)
+    {
+        _thread.Parent = parent;
+        return this;
+
     }
 
     public string GenerateThreadName(int tid)
@@ -40,6 +50,7 @@ public class MockThreadBuilder : IMockThreadBuilder
     }
     public MockThreadBuilder AddTid()
     {
+        _thread.Tid = tidManager.AddTid(_thread.Parent.Pid);
         return this;
     }
 
@@ -90,13 +101,6 @@ public class MockThreadBuilder : IMockThreadBuilder
         req.Thread = _thread;
         _mediator.Send(req);
         return this;
-    }
-
-    public MockThreadBuilder AddParentProcess(MockProcess parent)
-    {
-        _thread.Parent = parent;
-        return this;
-
     }
 
     public MockThread Build()
