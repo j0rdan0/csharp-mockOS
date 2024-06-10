@@ -38,6 +38,7 @@ public class MockProcessBuilder : IMockProcessBuilder
         _proc = new MockProcess();
     }
 
+
     public MockProcessBuilder AddPriority(int? priority)
     {
         if (priority == null)

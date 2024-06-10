@@ -16,6 +16,7 @@ public class MockThread : OSObject
     public int ExitCode { get; set; }
     public MockThreadStack Stack { get; set; }// needs to be allocated by VM manager, size of 1024 
     public MockProcess Parent { get; set; }
+    public int MockProcessId { get; set; } // Foreign key property
 
 }
 

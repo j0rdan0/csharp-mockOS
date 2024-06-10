@@ -20,7 +20,7 @@ public class ThreadService : IThreadService
     public readonly IMockThreadBuilder _builder;
     public readonly IProcessService _processService;
 
-    private static readonly TidManager tidManager = new TidManager();
+    private static readonly TidAllocator tidManager = new TidAllocator();
     public ThreadService(IMapper automaper, IThreadRepository repository, IMockThreadBuilder builder, IProcessService processService)
     {
         _mapper = automaper;
@@ -47,6 +47,19 @@ public class ThreadService : IThreadService
         .AddCreationTime()
         .AddStack()
         .Build();
+
+        if(newThread == null || parent == null) {
+            Console.WriteLine("***************null process or thread");
+        } else {
+            Console.WriteLine("********** not null thread");
+            try  {
+                parent.Threads.Add(newThread);
+            }
+            catch (Exception ex) {
+                Console.WriteLine(ex.ToString());
+            }
+            
+        }
 
         await _repository.CreateThread(newThread);
         return _mapper.Map<MockThread, MockThreadDto>(newThread);

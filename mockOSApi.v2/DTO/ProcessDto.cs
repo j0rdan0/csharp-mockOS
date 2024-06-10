@@ -19,6 +19,7 @@ public class MockProcessDto()
     public bool? IsService { get; set; }
     public string? ErrorMessage { get; set; }
     public UserDTO User { get; set; }
+    public MockThreadDto[] Threads { get; set; } 
 }
 
 public class MockProcessCreationDto()

@@ -22,7 +22,7 @@ public class MockProcess : OSObject
     public TimeSpan ExecutionTime { get; set; }
     public User User { get; set; }
     public int UserUid  {get;set;}
-    public List<MockThread> Threads { get; set; }
+    public List<MockThread> Threads { get;set;} = new List<MockThread>();
     /*
     public MockProcess(string image, string[]? arguments)
     {
@@ -30,8 +30,12 @@ public class MockProcess : OSObject
     public MockProcess(string image)
     {
     }
-    public MockProcess() { }
+    public MockProcess() {
+        Threads = new List<MockThread>();
+     }
+    
     */
+    
 
 }
 

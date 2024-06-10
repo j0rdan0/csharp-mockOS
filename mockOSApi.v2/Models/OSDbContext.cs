@@ -11,12 +11,18 @@ public class OSDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<MockProcess>()
-            .HasOne(m => m.User)           // MockProcess has one User
+            .HasOne(m => m.User)   
             .WithMany()
+                    // MockProcess has one User
                        // User can be associated with many MockProcesses
             .HasForeignKey(m => m.UserUid)
-          
              .OnDelete(DeleteBehavior.Cascade); // Foreign key property in MockProcess
+
+              modelBuilder.Entity<MockProcess>()
+        .HasMany(p => p.Threads)
+        .WithOne(t => t.Parent)
+        .HasForeignKey(t => t.MockProcessId)
+        .OnDelete(DeleteBehavior.Cascade); // Foreign key property in MockThread
     }
 
     public DbSet<MockProcess> MockProcesses { get; set; }

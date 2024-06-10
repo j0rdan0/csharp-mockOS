@@ -1,17 +1,17 @@
 namespace mockOSApi.Utils;
 
-public class TidManager
+public class TidAllocator
 {
     private readonly Dictionary<int, HashSet<int>> processTidMap;
     private readonly Dictionary<int, List<int>> availableTids;
 
-    public TidManager()
+    public TidAllocator()
     {
         processTidMap = new Dictionary<int, HashSet<int>>();
         availableTids = new Dictionary<int, List<int>>();
     }
 
-    public int AddTid(int processId)
+    public int AddTid(int processId) // need to use highest tid search as well, same as for pid, since this is not persistent
     {
         if (!processTidMap.ContainsKey(processId))
         {

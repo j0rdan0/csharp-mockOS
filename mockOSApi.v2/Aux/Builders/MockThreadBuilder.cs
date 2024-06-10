@@ -21,7 +21,7 @@ public interface IMockThreadBuilder
 public class MockThreadBuilder : IMockThreadBuilder
 {
     private MockThread _thread = new MockThread();
-    private static readonly TidManager tidManager = new TidManager();
+    private static readonly TidAllocator tidManager = new TidAllocator();
 
     private readonly IMediator _mediator;
     private IThreadRepository _repository;
@@ -37,7 +37,6 @@ public class MockThreadBuilder : IMockThreadBuilder
     {
         _thread.Parent = parent;
         return this;
-
     }
 
     public string GenerateThreadName(int tid)

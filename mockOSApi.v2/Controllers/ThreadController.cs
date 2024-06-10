@@ -10,11 +10,11 @@ using mockOSApi.DTO;
 [Route("/api/[controller]")]
 [Produces("application/json")]
 public class ThreadController: Controller {
-    private readonly ILogger<ProcessController> _logger;
+    private readonly ILogger<ThreadController> _logger;
 
     private readonly IThreadService _threadService;
 
-    public ThreadController(ILogger<ProcessController> logger, IThreadService processHandler)
+    public ThreadController(ILogger<ThreadController> logger, IThreadService processHandler)
     {
         _logger = logger;
         _threadService = processHandler;

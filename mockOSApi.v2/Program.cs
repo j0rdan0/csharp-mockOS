@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Microsoft.Extensions.Azure;
 using Azure.Identity;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +17,10 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultDatabas
 var vaultUri = builder.Configuration["VaultURI"];
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });;
 
 
 builder.Services.AddDbContext<OSDbContext>(

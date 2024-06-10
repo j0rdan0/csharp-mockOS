@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using mockOSApi.Data;
 
@@ -11,9 +12,11 @@ using mockOSApi.Data;
 namespace mockOSApi.v2.Migrations
 {
     [DbContext(typeof(OSDbContext))]
-    partial class OSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240610114924_AddMockThreadConfiguration")]
+    partial class AddMockThreadConfiguration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

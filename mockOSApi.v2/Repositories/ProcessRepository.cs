@@ -18,6 +18,7 @@ public interface IProcessRepository
     public Task CreateProcess(MockProcess proc);
     public Task Save();
     public bool ProcessExists(int pid);
+    public List<MockThread> GetThreadsByPid(int pid);
 
 };
 
@@ -66,6 +67,14 @@ public class ProcessRepositoryDb : IProcessRepository
         proc.Priority = prio;
         _dbContext.SaveChanges();
         return proc;
+    }
+
+    public List<MockThread> GetThreadsByPid(int pid)
+    {
+        var threads = _dbContext.MockThreads
+                                    .Where(t => t.Parent.Pid == pid)
+                                    .ToList();
+        return threads;
     }
 
     public async Task Save()

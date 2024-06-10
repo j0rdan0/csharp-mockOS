@@ -88,7 +88,8 @@ public class ProcessController : Controller
     [HttpGet("{pid:int}")]
     public ActionResult<MockProcessDto> Get(int pid)
     {
-        var proc = _processService.GetProcessDtoByPid(pid);
+        var proc = _processService.GetProcessDtoByPidNew(pid);
+       // var proc = _processService.GetProcessDtoByPid(pid);
         if (proc == null)
         {
             _logger.LogInformation("[*] Process with PID {0} NOT FOUND [{1}]", pid, DateTime.Now);
