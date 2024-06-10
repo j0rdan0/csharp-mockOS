@@ -9,7 +9,7 @@ public interface IFileSystem
     public void Delete();
 }
 
-public class MockOsFileSystem
+public class MockFileSystem
 {
 
 }

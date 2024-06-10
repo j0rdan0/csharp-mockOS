@@ -2,6 +2,7 @@ using mockOSApi.Models;
 using mockOSApi.DTO;
 using AutoMapper;
 using mockOSApi.Utils;
+using mockOSApi.Requests;
 
 namespace mockOSApi.Services;
 
@@ -9,7 +10,7 @@ public interface IThreadService
 {
     public bool SuspendThread(int tid);
     public void Run(string[]? param);
-    public Task<MockThreadDto>? CreateThread(MockThreadCreationDto thread);
+    public Task<MockThreadDto>? CreateThread(CreateThreadRequest request);
     public bool TerminateThread(int tid);
 }
 public class ThreadService : IThreadService
@@ -31,9 +32,10 @@ public class ThreadService : IThreadService
 
     public void Run(string[]? param) { }
     public string? StartFunction { get; set; }
-    public async Task<MockThreadDto>? CreateThread(MockThreadCreationDto thread)
+
+    public async Task<MockThreadDto>? CreateThread(CreateThreadRequest request)
     {
-        MockProcess? parent = _processService.GetProcessByPid(thread.ParentPid);
+        MockProcess? parent = _processService.GetProcessByPid(request.ParentPid);
         if (parent == null)
         {
             return null;
@@ -43,23 +45,10 @@ public class ThreadService : IThreadService
         .AddTid()
         .AddThreadStatus()
         .AddExitCode()
-        .AddStartFunction(thread.StartFunction)
+        .AddStartFunction(request.StartFunction)
         .AddCreationTime()
         .AddStack()
         .Build();
-
-        if(newThread == null || parent == null) {
-            Console.WriteLine("***************null process or thread");
-        } else {
-            Console.WriteLine("********** not null thread");
-            try  {
-                parent.Threads.Add(newThread);
-            }
-            catch (Exception ex) {
-                Console.WriteLine(ex.ToString());
-            }
-            
-        }
 
         await _repository.CreateThread(newThread);
         return _mapper.Map<MockThread, MockThreadDto>(newThread);

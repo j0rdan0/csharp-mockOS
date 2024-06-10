@@ -59,7 +59,7 @@ public class ProcessService : IProcessService
     public MockProcessDto GetProcessDtoByPidNew(int pid) => _mapper.Map<MockProcessDto>(GetProcessByPidNew(pid)); // updated to include threads as well
     public MockProcess? GetProcessByPid(int pid) => _repository.ProcessExists(pid) ? _repository.GetProcessByPid(pid) : null;
 
-    public MockProcess? GetProcessByPidNew(int pid) 
+    public MockProcess? GetProcessByPidNew(int pid)
     {
         if (!_repository.ProcessExists(pid))
         {
@@ -107,7 +107,7 @@ public class ProcessService : IProcessService
     public async Task<MockProcessDto>? CreateProcess(MockProcessCreationDto process, User user)
     {
         var proc = _mapper.Map<MockProcess>(process);
-    
+
         // TBD allocating memory - heap, VA space etc
 
         // Creating main thread etc
